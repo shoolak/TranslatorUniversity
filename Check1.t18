@@ -1,0 +1,24 @@
+{Check1}
+Startprogram
+Startblok
+Int32 _a,_b;
+Scan(_a)
+Scan(_b)
+Int32 _c,_d,_e,_f,_g;
+_c => _a ++ _b
+_d => _a -- _b
+_e => _a ** _b
+_f => _a Div _b
+_g => _a Mod _b
+Print(_c)
+Print(_d)
+Print(_e)
+Print(_f)
+Print(_g)
+Int32 _x,_y;
+(_a -- _b) ** 10 ++ (_a ++ _b) Div 10 => _x
+_x ++ _x Mod 10 => _y
+Print(_x)
+Print(_y)
+Endblok
+

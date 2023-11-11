@@ -1,0 +1,54 @@
+{Check2}
+Startprogram
+Startblok
+Int32 _a,_b,_c;
+Int32 _g;
+Int32 _z,_v,_w,_m;
+1 => _v
+10 => _w
+-1 => _m
+0 => _z
+If(_a Ls _b)
+Startblok
+_b => _g
+If(_b Ls _c)
+Startblok
+_c => _g
+Endblok
+Else
+Startblok
+_a => _g
+Endblok
+Endblok
+Print(_g)
+If((_a Eq _b) And (_a Eq _c) And (_b Eq _c))
+Startblok
+	Print(_v)
+Endblok
+Else
+Startblok
+Print(_z)
+Endblok
+
+If((_a Ls 0) And (_b Ls 0) And (_c Ls 0))
+Startblok
+	Print(_m)
+Endblok
+Else
+Startblok
+Print(_z)
+Endblok
+
+If(Not(_a Ls(_b ++ _c)))
+Startblok
+	Print(_w)
+Endblok
+Else
+Startblok
+Print(_z)
+Endblok
+Endblok
+
+
+
+

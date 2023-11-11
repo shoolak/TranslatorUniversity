@@ -1,0 +1,4 @@
+i:\Margo\0000\Системне програмування, частина 2\Курсова робота\Translator\x64\Debug\Translator.exe
+C:\Users\dzono\Downloads\Translator (1) 2\Translator\x64\Debug\Translator.exe
+C:\Users\dzono\OneDrive\Рабочий стол\Translator (1) 2\Translator\x64\Debug\Translator.exe
+D:\nulp3.1\Курсова СП\Translator (1) 2\Translator\x64\Debug\Translator.exe

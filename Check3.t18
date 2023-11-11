@@ -1,0 +1,28 @@
+Check3
+Startprogram
+Startblok
+Int32 _a,_bb
+Int32 _z
+Repeat
+Startblok
+_a ** _a => _z
+Print(_z)
+_a ++ 1 => _a
+Endblok
+Until(_a Neq _b)iuhjkp
+
+Int32 _i,_x,_j;
+0 => _x;
+For 1 => _i To _a Do
+Startblok
+For 1 => _j To _b Do
+Startblok
+_x ++ 1 => _x
+Endblok
+
+Endblok
+
+
+Print(_x)
+
+Endblok
