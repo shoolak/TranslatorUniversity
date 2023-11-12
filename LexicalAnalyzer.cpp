@@ -208,7 +208,6 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 				strcpy_s(TempToken.name, ")");
 				TempToken.type = RBraket;
 				TempToken.value = 0;
-				if (TempToken.stan == 1)
 				CheckComments(TempToken);
 				TempToken.line = line;
 				state = Finish;
