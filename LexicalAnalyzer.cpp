@@ -3,12 +3,15 @@
 #include <stdlib.h>
 #include <string>
 #include "Data.h"
+#include <unordered_map>
+#include <cstring>
 
 using namespace std;
 
 
 // функція отримує лексеми з вхідного файлу F і записує їх у таблицю лексем TokenTable 
 // результат функції - кількість лексем
+
 unsigned int GetTokens(FILE* F, Token TokenTable[])
 {
 	States state = Start;
@@ -17,6 +20,53 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 	unsigned int NumberOfTokens = 0;
 	char ch, buf[16];
 	int line = 1;
+	/////////////////////////
+
+	std::unordered_map<std::string, TypeOfTokens> tokenLetterMap =
+	{
+		{"Commentar", Commentar},
+		{ "Startprogram", Startprogram },
+		{ "Int32", Int32 },
+		{ "Startblok", Startblok },
+		{ "Endblok", Endblok },
+		{ "Scan", Scan },
+		{ "Print", Print },
+		{ "If", If },
+		{ "Else", Else },
+		{ "For", For },
+		{ "To", To },
+		{ "Do", Do },
+		{ "Down", Down },
+		{ "While", While },
+		{ "Endwhile", Endwhile },
+		{ "Repeat", Repeat },
+		{ "Until", Until },
+		{ "Goto", Goto },
+		{ "Div", Div },
+		{ "Mod", Mod },
+		{ "Eq", Equality },
+		{ "Neq", NotEquality },
+		{ "Gr", Greate },
+		{ "Ls", Less },
+		{ "Not", Not },
+		{ "And", And },
+		{ "Or", Or },
+		
+	};
+	std::unordered_map<std::string, TypeOfTokens> tokenAnotherMap =
+	{
+		{"=>", Assign},
+		{"++", Add},
+		{"--", Sub},
+		{"**", Mul},
+		{"(", LBraket},
+		{")", RBraket},
+		{";", Semicolon},
+		{",", Comma},
+		{"{", Lcomment},
+		{"}", Rcomment},
+	};
+	/////////////////////////
 	// читання символів з файлу і пошук лексем
 	ch = getc(F);
 	while (ch != EOF)
@@ -42,8 +92,6 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 						state = Another;
 							break;
 		}
-		// кінець виділення чергової лексеми 
-		// запис лексеми у таблицю лексем
 		case Finish:
 		{
 			if (NumberOfTokens < MAX_TOKENS)
@@ -59,11 +107,6 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 			}
 			break;
 		}
-		// поточний символ - маленька літера, поточна лексема - ключове слово або ідентифікатор
-		case Comments:
-		{
-			
-		}
 		case Letter:
 		{
 			buf[0] = ch;
@@ -77,90 +120,18 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 			buf[j] = '\0';
 			ungetc(ch, F);
 			
-			TypeOfTokens temp_type = Unknown;
+			TypeOfTokens temp_type;
 			if (TempToken.stan == 1)
+			{
 				temp_type = Commentar;
+			}
+			else if (tokenLetterMap.count(buf))
+			{
+				temp_type = tokenLetterMap[buf];
+			}
 			else
-			if (!strcmp(buf, "Startprogram"))
-				temp_type = Startprogram;
-			else
-				if (!strcmp(buf, "Int32"))
-					temp_type = Int32;
-				else
-					if (!strcmp(buf, "Startblok"))
-						temp_type = Startblok;
-					else
-						if (!strcmp(buf, "Endblok"))
-							temp_type = Endblok;
-						else
-							if (!strcmp(buf, "Scan"))
-								temp_type = Scan;
-							else
-								if (!strcmp(buf, "Print"))
-									temp_type = Print;
-								else
-									if (!strcmp(buf, "If"))
-										temp_type = If;
-									else
-										if (!strcmp(buf, "Else"))
-											temp_type = Else;
-										else
-											if (!strcmp(buf, "For"))
-												temp_type = For;
-											else
-												if (!strcmp(buf, "To"))
-													temp_type = To;
-												else
-													if (!strcmp(buf, "Down"))
-														temp_type = Down;
-													else
-														if (!strcmp(buf, "Do"))
-															temp_type = Do;
-														else
-															if (!strcmp(buf, "While"))
-																temp_type = While;
-															else
-																if (!strcmp(buf, "Endwhile"))
-																	temp_type = Endwhile;
-																else
-																	if (!strcmp(buf, "Repeat"))
-																		temp_type = Repeat;
-																	else
-																		if (!strcmp(buf, "Until"))
-																			temp_type = Until;
-																		else
-																			if (!strcmp(buf, "Goto"))
-																				temp_type = Goto;
-																			else
-																				if (!strcmp(buf, "Mod"))
-																					temp_type = Mod;
-																				else
-																					if (!strcmp(buf, "Div"))
-																						temp_type = Div;
-																					else
-																						if (!strcmp(buf, "Eq"))
-																							temp_type = Equality;
-																						else
-																							if (!strcmp(buf, "Neq"))
-																								temp_type = NotEquality;
-																							else
-																								if (!strcmp(buf, "Gr"))
-																									temp_type = Greate;
-																								else
-																									if (!strcmp(buf, "Ls"))
-																										temp_type = Less;
-																									else
-																										if (!strcmp(buf, "Not"))
-																											temp_type = Not;
-																										else
-																											if (!strcmp(buf, "And"))
-																												temp_type = And;
-																											else
-																												if (!strcmp(buf, "Or"))
-																													temp_type = Or;
-																													
+				temp_type = Unknown;
 
-																							
 			strcpy_s(TempToken.name, buf);
 			TempToken.type = temp_type;
 			TempToken.value = 0;
@@ -174,7 +145,9 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 			buf[0] = ch;
 			int j = 1;
 			ch = getc(F);
-			while ((ch <= '9' && ch >= '0') && j < 15)
+			while (ch != '(' && ch != ')' && ch != '*' && ch != '+' && ch != ',' && ch != '-' &&
+				ch != ';' && ch != '=' && ch != '>' && ch != '_' && ch != '{' && ch != '}' &&
+				ch != ' ' && ch != '\n' && ch != '\t' && j < 15)
 			{
 				buf[j++] = ch;
 				ch = getc(F);
@@ -183,13 +156,24 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 			ungetc(ch, F);
 
 			strcpy_s(TempToken.name, buf);
-			TempToken.type = Number;
-			TempToken.value = atoi(buf);
-			if (TempToken.stan == 1)
+			int temp = 0;
+			for (int i = 0; i < buf[i] != '\0'; i++)
 			{
-				TempToken.type = Commentar;
+				if (isdigit(buf[i])) {
+					temp++;
+				}
+			}
+			if (strlen(buf) == temp)
+			{
+				TempToken.type = Number;
+				TempToken.value = atoi(buf);
+			}
+			else
+			{
+				TempToken.type = Unknown;
 				TempToken.value = 0;
 			}
+			CheckComments(TempToken);
 			TempToken.line = line;
 			state = Finish;
 			break;
@@ -213,11 +197,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 				strcpy_s(TempToken.name, "(");
 				TempToken.type = LBraket;
 				TempToken.value = 0;
-				if (TempToken.stan == 1)
-				{
-					TempToken.type = Commentar;
-					TempToken.value = 0;
-				}
+				CheckComments(TempToken);
 				TempToken.line = line;
 				state = Finish;
 				break;
@@ -229,10 +209,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 				TempToken.type = RBraket;
 				TempToken.value = 0;
 				if (TempToken.stan == 1)
-				{
-					TempToken.type = Commentar;
-					TempToken.value = 0;
-				}
+				CheckComments(TempToken);
 				TempToken.line = line;
 				state = Finish;
 				break;
@@ -243,11 +220,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 				strcpy_s(TempToken.name, ";");
 				TempToken.type = Semicolon;
 				TempToken.value = 0;
-				if (TempToken.stan == 1)
-				{
-					TempToken.type = Commentar;
-					TempToken.value = 0;
-				}
+				CheckComments(TempToken);
 				TempToken.line = line;
 				state = Finish;
 				break;
@@ -258,10 +231,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 				TempToken.type = Comma;
 				TempToken.value = 0;
 				if (TempToken.stan == 1)
-				{
-					TempToken.type = Commentar;
-					TempToken.value = 0;
-				}
+				CheckComments(TempToken);
 				TempToken.line = line;
 				state = Finish;
 				break;
@@ -287,7 +257,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 				state = Finish;
 				break;
 			}
-			///// арифм вирази
+			 //арифм вирази
 			case  '*':
 			{
 				char c;
@@ -298,11 +268,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 					strcpy_s(TempToken.name, "**");
 					TempToken.type = Mul;
 					TempToken.value = 0;
-					if (TempToken.stan == 1)
-					{
-						TempToken.type = Commentar;
-						TempToken.value = 0;
-					}
+					CheckComments(TempToken);
 					TempToken.line = line;
 					state = Finish;
 					break;
@@ -319,11 +285,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 					strcpy_s(TempToken.name, "++");
 					TempToken.type = Add;
 					TempToken.value = 0;
-					if (TempToken.stan == 1)
-					{
-						TempToken.type = Commentar;
-						TempToken.value = 0;
-					}
+					CheckComments(TempToken);
 					TempToken.line = line;
 					state = Finish;
 
@@ -341,11 +303,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 					strcpy_s(TempToken.name, "--");
 					TempToken.type = Sub;
 					TempToken.value = 0;
-					if (TempToken.stan == 1)
-					{
-						TempToken.type = Commentar;
-						TempToken.value = 0;
-					}
+					CheckComments(TempToken);
 					TempToken.line = line;
 					state = Finish;
 					break;
@@ -357,11 +315,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 					sprintf_s(TempToken.name, "-%c", c);
 					TempToken.type = Number;
 					TempToken.value = stoi(TempToken.name);
-					if (TempToken.stan == 1)
-					{
-						TempToken.type = Commentar;
-						TempToken.value = 0;
-					}
+					CheckComments(TempToken);
 					TempToken.line = line;
 					state = Finish;
 					break;
@@ -379,11 +333,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 					strcpy_s(TempToken.name, "=>");
 					TempToken.type = Assign;
 					TempToken.value = 0;
-					if (TempToken.stan == 1)
-					{
-						TempToken.type = Commentar;
-						TempToken.value = 0;
-					}
+					CheckComments(TempToken);
 					TempToken.line = line;
 					state = Finish;
 					break;
@@ -410,11 +360,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 						strcpy_s(TempToken.name, buf);
 						TempToken.type = Identifier;
 						TempToken.value = 0;
-						if (TempToken.stan == 1)
-						{
-							TempToken.type = Commentar;
-							TempToken.value = 0;
-						}
+						CheckComments(TempToken);
 						TempToken.line = line;
 						state = Finish;
 						break;
@@ -424,11 +370,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 						strcpy_s(TempToken.name, buf);
 						TempToken.type = Unknown;
 						TempToken.value = 0;
-						if (TempToken.stan == 1)
-						{
-							TempToken.type = Commentar;
-							TempToken.value = 0;
-						}
+						CheckComments(TempToken);
 						TempToken.line = line;
 						state = Finish;
 						break;
@@ -459,7 +401,14 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 	}
 	return NumberOfTokens;
 }
-
+void CheckComments(Token& TempToken)
+{
+	if (TempToken.stan == 1)
+	{
+		TempToken.type = Commentar;
+		TempToken.value = 0;
+	}
+}
 void PrintTokens(Token TokenTable[], unsigned int TokensNum)
 {
 	char type_tokens[16];

@@ -1,5 +1,6 @@
 #pragma once
-
+#include <unordered_map>
+#include <cstring>
 #define MAX_TOKENS 1000
 #define MAX_IDENTIFIER 10
 
@@ -55,6 +56,7 @@ enum TypeOfTokens
     Unknown
 };
 
+
 // структура для зберігання інформації про лексему
 struct Token
 {
@@ -82,6 +84,8 @@ enum States
 // функція отримує лексеми з вхідного файлу F і записує їх у таблицю лексем TokenTable 
 // результат функції - кількість лексем
 unsigned int GetTokens(FILE* F, Token TokenTable[]);
+
+void CheckComments(Token& TempToken);
 
 void PrintTokens(Token TokenTable[], unsigned int TokensNum);
 
