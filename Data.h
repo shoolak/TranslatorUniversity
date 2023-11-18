@@ -93,3 +93,5 @@ void PrintTokensToFile(char* FileName, Token TokenTable[], unsigned int TokensNu
 
 void PrintWarningToFile(char* FileName, Token TokenTable[], unsigned int TokensNum);
 
+void UnknowForAnother(Token& TempToken, int line, const char* element);
+

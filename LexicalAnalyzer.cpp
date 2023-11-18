@@ -259,13 +259,23 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 			 //אנטפל גטנאחט
 			case  '*':
 			{
-				char c;
-				c = getc(F);
-				if (c == '*')
+				
+				ch = getc(F);
+				if (ch == '*')
 				{
 					
 					strcpy_s(TempToken.name, "**");
 					TempToken.type = Mul;
+					TempToken.value = 0;
+					CheckComments(TempToken);
+					TempToken.line = line;
+					state = Finish;
+					break;
+				}
+				else
+				{
+					strcpy_s(TempToken.name, "*");
+					TempToken.type = Unknown;
 					TempToken.value = 0;
 					CheckComments(TempToken);
 					TempToken.line = line;
@@ -277,9 +287,9 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 		
 			case '+':
 			{
-				char c;
-				c = getc(F);
-				if (c == '+')
+				
+				ch = getc(F);
+				if (ch == '+')
 				{
 					strcpy_s(TempToken.name, "++");
 					TempToken.type = Add;
@@ -290,14 +300,35 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 
 					break;
 				}
+				else
+				{
+					strcpy_s(TempToken.name, "+");
+					TempToken.type = Unknown;
+					TempToken.value = 0;
+					CheckComments(TempToken);
+					TempToken.line = line;
+					state = Finish;
+					break;
+				}
 				
 			}
 			
 			case '-':
 			{
-				char c;
-				c = getc(F);
-				if (c == '-')
+				
+				ch = getc(F);
+
+				if (ch >= '0' && ch <= '9')
+				{
+					sprintf_s(TempToken.name, "-%c", ch);
+					TempToken.type = Number;
+					TempToken.value = stoi(TempToken.name);
+					CheckComments(TempToken);
+					TempToken.line = line;
+					state = Finish;
+					break;
+				}
+				if (ch == '-')
 				{
 					strcpy_s(TempToken.name, "--");
 					TempToken.type = Sub;
@@ -308,12 +339,11 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 					break;
 
 				}
-				
-				if (c >= '0' && c <= '9')
+				else
 				{
-					sprintf_s(TempToken.name, "-%c", c);
-					TempToken.type = Number;
-					TempToken.value = stoi(TempToken.name);
+					strcpy_s(TempToken.name, "-");
+					TempToken.type = Unknown;
+					TempToken.value = 0;
 					CheckComments(TempToken);
 					TempToken.line = line;
 					state = Finish;
@@ -324,9 +354,9 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 
 			case '=':
 			{
-				char c;
-				c = getc(F);
-				if (c == '>')
+				
+				ch = getc(F);
+				if (ch == '>')
 				{
 
 					strcpy_s(TempToken.name, "=>");
@@ -336,6 +366,17 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 					TempToken.line = line;
 					state = Finish;
 					break;
+				}
+				else
+				{
+					strcpy_s(TempToken.name, "+");
+					TempToken.type = Unknown;
+					TempToken.value = 0;
+					CheckComments(TempToken);
+					TempToken.line = line;
+					state = Finish;
+					break;
+					
 				}
 			}
 			case '_':
@@ -376,6 +417,16 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 					}
 					
 				}
+				else
+				{
+					strcpy_s(TempToken.name, "_");
+					TempToken.type = Unknown;
+					TempToken.value = 0;
+					CheckComments(TempToken);
+					TempToken.line = line;
+					state = Finish;
+					break;
+				}
 				break;
 			}
 			default:
@@ -384,12 +435,7 @@ unsigned int GetTokens(FILE* F, Token TokenTable[])
 				TempToken.name[1] = '\0';
 				TempToken.type = Unknown;
 				TempToken.value = 0;
-				if (TempToken.stan == 1)
-				{
-					TempToken.type = Commentar;
-					TempToken.value = 0;
-				}
-
+				CheckComments(TempToken);
 				TempToken.line = line;
 				state = Finish;
 				break;
@@ -716,4 +762,13 @@ void PrintTokensToFile(char* FileName, Token TokenTable[], unsigned int TokensNu
 		fprintf(F, "--------------------------------------------------------------------------------------");
 	}
 	fclose(F);
+}
+void UnknowForAnother(Token& TempToken,int line,const char *element)
+{
+
+	strcpy_s(TempToken.name, element);
+	TempToken.type = Unknown;
+	TempToken.value = 0;
+	CheckComments(TempToken);
+	TempToken.line = line;
 }
